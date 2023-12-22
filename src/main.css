@@ -1,0 +1,58 @@
+:root {
+  --color-primary-text: #ffffff;
+  --color-primary-surface: hsl(51, 15%, 10%);
+
+  font-family: Roboto, system-ui, Arial;
+  color: var(--color-primary-text);
+  background-color: var(--color-primary-surface);
+
+  --font-size-multiplier: 1;
+  --font-size-tiny: calc(0.6rem * var(--font-size-multiplier));
+  --font-size-small: calc(0.8rem * var(--font-size-multiplier));
+  --font-size-medium: calc(1rem * var(--font-size-multiplier));
+  --font-size-big: calc(1.2rem * var(--font-size-multiplier));
+  --font-size-large: calc(1.5rem * var(--font-size-multiplier));
+  --font-size-huge: calc(1.8rem * var(--font-size-multiplier));
+  --font-size-enormous: calc(2.1rem * var(--font-size-multiplier));
+
+  --spacing-multiplier: 1;
+  --spacing-tiny: calc(5px * var(--spacing-multiplier));
+  --spacing-small: calc(8px * var(--spacing-multiplier));
+  --spacing-medium: calc(12px * var(--spacing-multiplier));
+  --spacing-big: calc(16px * var(--spacing-multiplier));
+  --spacing-large: calc(20px * var(--spacing-multiplier));
+  --spacing-huge: calc(24px * var(--spacing-multiplier));
+  --spacing-enormous: calc(28px * var(--spacing-multiplier));
+}
+
+/* Some elements do not inherit font-family by default */
+button,
+input,
+select {
+  font-family: inherit;
+}
+
+body {
+  margin: 0;
+}
+
+.screen {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-column {
+  flex-direction: column;
+}
