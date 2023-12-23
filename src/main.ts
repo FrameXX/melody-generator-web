@@ -12,8 +12,8 @@ const light: ThemeDefinition = {
   colors: {
     background: "#F5F5F5",
     surface: "#FFFFFF",
-    primary: "#FFC107",
-    secondary: "#8BC34A",
+    primary: "#C29100",
+    secondary: "#699933",
     error: "#B00020",
     info: "#2196F3",
     success: "#4CAF50",
@@ -25,7 +25,7 @@ const dark: ThemeDefinition = {
   dark: true,
   colors: {
     background: "#000000",
-    surface: "##212121",
+    surface: "#212121",
     primary: "#FFC107",
     secondary: "#8BC34A",
     error: "#B00020",
