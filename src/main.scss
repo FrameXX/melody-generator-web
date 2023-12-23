@@ -1,10 +1,5 @@
 :root {
-  --color-primary-text: #ffffff;
-  --color-primary-surface: hsl(51, 15%, 10%);
-
-  font-family: Roboto, system-ui, Arial;
-  color: var(--color-primary-text);
-  background-color: var(--color-primary-surface);
+  font-family: "Roboto", system-ui, Arial;
 
   --font-size-multiplier: 1;
   --font-size-tiny: calc(0.6rem * var(--font-size-multiplier));
@@ -55,4 +50,8 @@ body {
 
 .flex-column {
   flex-direction: column;
+}
+
+#app {
+  padding: var(--spacing-medium);
 }

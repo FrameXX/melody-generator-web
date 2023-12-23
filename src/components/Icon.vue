@@ -20,8 +20,8 @@ const props = defineProps({
   aspect-ratio: 1;
   width: 32px;
   height: 32px;
-  fill: var(--color-primary-text);
-  color: var(--color-primary-text);
+  fill: currentColor;
+  color: currentColor;
   margin: var(--spacing-small);
 
   &.small {
