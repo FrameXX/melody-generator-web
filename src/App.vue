@@ -22,27 +22,40 @@ const statusColor = computed(() => {
 </script>
 
 <template>
-  <v-theme-provider>
-    <v-card
-      :color="statusColor"
-      title="Stav připojení světla"
-      :loading="app.updatingLightState.value"
-      id="card-status"
-      :subtitle="status"
-    >
-      <v-card-subtitle> </v-card-subtitle>
-      <template v-slot:prepend>
-        <icon :icon-id="statusIconId"></icon>
-      </template>
-      <v-card-actions>
-        <v-btn
-          @click="app.requestLightStateUpdate()"
-          title="Znovu zkontrolovat stav připojení světla"
-          >Znovu zkontrolovat</v-btn
-        >
-      </v-card-actions>
-    </v-card>
-  </v-theme-provider>
+  <!-- RELATIVE -->
+  <v-card
+    :color="statusColor"
+    title="Stav připojení světla"
+    :loading="app.updatingLightState.value"
+    id="card-status"
+    :subtitle="status"
+  >
+    <v-card-subtitle> </v-card-subtitle>
+    <template v-slot:prepend>
+      <icon size="big" :icon-id="statusIconId" />
+    </template>
+    <v-card-actions>
+      <v-btn
+        @click="app.requestLightStateUpdate()"
+        title="Znovu zkontrolovat stav připojení světla"
+        >Znovu zkontrolovat</v-btn
+      >
+    </v-card-actions>
+  </v-card>
+
+  <!-- FIXED -->
+  <v-btn color="primary" size="large" id="button-apply-changes">
+    <template v-slot:prepend>
+      <icon icon-id="send-outline" />
+    </template>
+    Aplikovat změny
+  </v-btn>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+#button-apply-changes {
+  position: fixed;
+  right: var(--spacing-big);
+  bottom: var(--spacing-big);
+}
+</style>
