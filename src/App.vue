@@ -25,7 +25,6 @@ const statusColor = computed(() => {
   <v-theme-provider>
     <v-card
       :color="statusColor"
-      max-width="400px"
       title="Stav připojení světla"
       :loading="app.updatingLightState.value"
       id="card-status"
