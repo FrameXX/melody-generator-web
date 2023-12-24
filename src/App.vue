@@ -1,50 +1,51 @@
 <script setup lang="ts">
 import App from "./modules/app";
 import Icon from "./components/Icon.vue";
-import { computed, ref } from "vue";
-import { watch } from "vue";
+import Toast from "./components/Toast.vue";
+import { computed } from "vue";
 
 const app = new App();
 
+const lightStateInvalid = computed(() => {
+  app.lightStateUpdatedSecondsAgo.value >
+    app.settings.lightStateValidityTimeoutS;
+});
+
 const statusIconId = computed(() => {
-  if (app.updatingLightState.value) return "wifi-refresh";
-  if (app.lightStateUpdateTime.value === 0) return "wifi-remove";
-  return "wifi-check";
+  if (app.checkingLightState.value) return "sync";
+  if (app.serverConnectionFailed.value) return "server-network-off";
+  if (app.lightStateCheckTimedOut.value) return "lightbulb-alert-outline";
+  if (app.lightStateUpdateTime.value === -1 || lightStateInvalid)
+    return "lightbulb-question-outline";
+  return "check-circle-outline";
 });
 const statusText = computed(() => {
-  if (app.updatingLightState.value) return "Probíhá kontrola";
+  if (app.checkingLightState.value) return "Probíhá kontrola";
   if (app.serverConnectionFailed.value) return "Připojení k serveru selhalo";
   if (app.lightStateCheckTimedOut.value) return "Světlo neodpovídá";
-  if (app.lightStateUpdateTime.value === 0) return "Neznámý";
+  if (app.lightStateUpdateTime.value === -1) return "Neznámý";
+  if (lightStateInvalid) return "Platnost stavu vypršela";
   return "Připojeno";
 });
 const statusColor = computed(() => {
-  if (app.lightStateUpdateTime.value === 0) return "error";
+  if (app.lightStateUpdateTime.value === -1 || lightStateInvalid)
+    return "error";
   return "success";
 });
 
-const lastTimeUpdateText = ref("");
-watch(app.lightStateUpdateTime, updateLastTimeUpdateText);
-setInterval(updateLastTimeUpdateText, 1000);
-updateLastTimeUpdateText();
-function updateLastTimeUpdateText() {
-  if (app.lightStateUpdateTime.value === 0) {
-    lastTimeUpdateText.value = "Žádný stav nezaznamenán.";
-    return;
-  }
+const lastTimeUpdateText = computed(() => {
+  if (app.lightStateUpdateTime.value === -1) return "Není k dispozici.";
 
-  const secondsAgo =
-    Math.trunc(Date.now() / 1000) - app.lightStateUpdateTime.value;
-  const minutesAgo = Math.trunc(secondsAgo / 60);
+  const minutesAgo = Math.trunc(app.lightStateUpdatedSecondsAgo.value / 60);
 
-  if (minutesAgo === 1) {
-    lastTimeUpdateText.value = "Naposledy aktualizováno před okamžikem.";
+  if (minutesAgo === 0) {
+    return "Naposledy aktualizováno před okamžikem.";
   } else if (minutesAgo === 1) {
-    lastTimeUpdateText.value = "Naposledy aktualizováno před 1 minutou.";
+    return "Naposledy aktualizováno před 1 minutou.";
   } else {
-    lastTimeUpdateText.value = `Naposledy aktualizováno před ${minutesAgo} minutami.`;
+    return `Naposledy aktualizováno před ${minutesAgo} minutami.`;
   }
-}
+});
 
 const powerSwicthSubtitle = computed(() => {
   return app.lightState.lightEnabled ? "Světlo zapnuto" : "Světlo vypnuto";
@@ -59,7 +60,7 @@ const powerSwicthSubtitle = computed(() => {
         <v-card
           :color="statusColor"
           title="Stav připojení světla"
-          :loading="app.updatingLightState.value"
+          :loading="app.checkingLightState.value"
           id="card-status"
           :subtitle="statusText"
           :text="lastTimeUpdateText"
@@ -69,6 +70,7 @@ const powerSwicthSubtitle = computed(() => {
           </template>
           <v-card-actions>
             <v-btn
+              :disabled="app.checkingLightState.value"
               @click="app.checkLightState()"
               title="Znovu zkontrolovat stav připojení světla"
               >Znovu zkontrolovat</v-btn
@@ -91,7 +93,14 @@ const powerSwicthSubtitle = computed(() => {
         </v-card>
 
         <!-- FIXED -->
-        <v-btn color="primary" size="large" id="button-apply-state">
+        <v-btn
+          :disabled="app.applyingLightState.value"
+          @click="app.applyLightState()"
+          title="Poslat nastavení"
+          color="primary"
+          size="large"
+          id="button-apply-state"
+        >
           <template v-slot:prepend>
             <icon icon-id="send-outline" />
           </template>
@@ -99,6 +108,16 @@ const powerSwicthSubtitle = computed(() => {
         </v-btn>
       </div>
     </main>
+
+    <div id="toast-stack" class="flex-column flex-center">
+      <transition-group name="slide-up">
+        <toast
+          v-for="toast in app.ui.toasts.value"
+          :key="toast.id"
+          :toast="toast"
+        />
+      </transition-group>
+    </div>
   </v-app>
 </template>
 
@@ -143,5 +162,36 @@ const powerSwicthSubtitle = computed(() => {
   position: fixed;
   right: var(--spacing-big);
   bottom: var(--spacing-big);
+}
+
+#toast-stack {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  margin: auto;
+
+  .toast {
+    margin: var(--spacing-medium);
+  }
+}
+
+// [Group] Slide down
+.slide-up-move,
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: transform var(--transition-duration-medium)
+      var(--transition-timing-jump),
+    opacity var(--transition-duration-medium) linear;
+}
+
+.slide-up-enter-from,
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.slide-up-leave-active {
+  position: absolute;
 }
 </style>
