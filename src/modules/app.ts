@@ -1,168 +1,54 @@
-import { ref } from "vue";
+import { Ref, reactive, ref, watch } from "vue";
 import LightState from "./light_state";
-import Message from "./message";
 import UI from "./ui";
+import NtfyTopicClient from "./ntfy_topic_client";
 
 export default class App {
-  private readonly ntfyTopic = "framexx";
-  private readonly storageKey = "light-controller";
   public readonly ui = new UI();
-  public lightState = new LightState(ref(true));
-  private readonly eventSource = new EventSource(
-    `https://ntfy.sh/${this.ntfyTopic}/sse`
-  );
-  public checkingLightState = ref(false);
-  public applyingLightState = ref(false);
-  public lightStateUpdateTime = ref(-1);
-  public lightStateUpdatedSecondsAgo = ref(-1);
-  private lightStateCheckTimeout: number | undefined;
-  public settings = {
-    postTimeoutMs: 6000,
-    lightStateValidityTimeoutS: 240,
-    lightStateCheckTimeoutMs: 12000,
-    lightStateApplyTimeoutMs: 3000,
-  };
-  public lightStateCheckTimedOut = ref(false);
-  public serverConnectionFailed = ref(false);
+  public lightState = reactive(new LightState(this));
+  public readonly ntfyTopic = ref("smart-light-channel");
+  private channel: NtfyTopicClient | undefined;
 
   constructor() {
-    this.restoreLightState();
-    this.eventSource.addEventListener("message", this.handleServerEvent);
-    this.checkLightState();
+    if (!navigator.cookieEnabled) return;
+    const ntfyTopicData = localStorage.getItem("ntfyTopic");
 
-    setInterval(() => {
-      this.lightStateUpdatedSecondsAgo.value =
-        this.lightStateUpdateTime.value === -1
-          ? -1
-          : Math.trunc(Date.now() / 1000) - this.lightStateUpdateTime.value;
-      if (
-        this.lightStateUpdatedSecondsAgo.value >
-        this.settings.lightStateValidityTimeoutS
-      )
-        if (
-          !this.serverConnectionFailed.value &&
-          !this.checkingLightState.value
-        )
-          this.checkLightState();
+    if (ntfyTopicData) this.ntfyTopic.value = ntfyTopicData;
+
+    watch(this.ntfyTopic, (newValue) => {
+      localStorage.setItem("ntfyTopic", newValue);
     });
   }
 
-  private restoreLightState() {
-    if (!navigator.cookieEnabled) return;
-    const lightStateStr = localStorage.getItem(
-      `${this.storageKey}-light-state`
-    );
-    if (!lightStateStr) return;
-    this.lightState = LightState.fromMessage(Message.fromString(lightStateStr));
-    const lightStateUpdateTimeStr = localStorage.getItem(
-      `${this.storageKey}-light-state-update-time`
-    );
-    if (!lightStateUpdateTimeStr) return;
-    this.lightStateUpdateTime.value = +lightStateUpdateTimeStr;
-  }
-
-  private saveLightState() {
-    if (!navigator.cookieEnabled) return;
-    const lightStateStr = this.lightState.toMessage().toString();
-    localStorage.setItem(`${this.storageKey}-light-state`, lightStateStr);
-  }
-
-  private saveLightStateUpdateTime() {
-    if (!navigator.cookieEnabled) return;
-    const lightStateUpdateTimeStr = this.lightStateUpdateTime.value.toString();
-    localStorage.setItem(
-      `${this.storageKey}-light-state-update-time`,
-      lightStateUpdateTimeStr
-    );
-  }
-
-  public async applyLightState() {
-    this.applyingLightState.value = true;
-
-    const ligthStateMessage = this.lightState.toMessage();
-    const requestSuccessful = await this.postMessage(ligthStateMessage);
-
-    if (requestSuccessful) {
-      this.ui.createToast(
-        "Nastavení úspěšně posláno.",
-        "check-circle-outline",
-        "success"
-      );
-      this.saveLightState();
-      setTimeout(
-        () => (this.applyingLightState.value = false),
-        this.settings.lightStateApplyTimeoutMs
-      );
-    } else {
-      this.ui.createToast(
-        "Připojení k serveru selhalo.",
-        "server-network-off",
+  public async requestChannelSetup() {
+    if (this.ui.connecting.value) {
+      this.ui.toaster.bake(
+        "Pokus o připojení již probíhá. Pro zrušení znovu načtěte stránku.",
+        "cancel",
         "error"
       );
-      this.applyingLightState.value = false;
-    }
-  }
-
-  private handleServerEvent = (event: MessageEvent) => {
-    const eventData = JSON.parse(event.data);
-    const messageStr = eventData.message as string;
-    const message = Message.fromString(messageStr);
-    this.handleMessage(message);
-  };
-
-  private handleMessage(message: Message) {
-    if (message.id === 1) {
-      this.updateLightStateFromMessage(message);
-    }
-  }
-
-  private updateLightStateFromMessage(message: Message) {
-    this.lightState.updateFromMessage(message);
-    this.checkingLightState.value = false;
-    if (this.lightStateCheckTimeout) clearTimeout(this.lightStateCheckTimeout);
-    this.lightStateCheckTimedOut.value = false;
-    this.lightStateUpdateTime.value = Math.trunc(Date.now() / 1000);
-    this.saveLightState();
-    this.saveLightStateUpdateTime();
-  }
-
-  get postUrl() {
-    return `https://ntfy.sh/${this.ntfyTopic}`;
-  }
-
-  public async checkLightState() {
-    this.checkingLightState.value = true;
-
-    const lightStateUpdateRequestMessage = new Message(0);
-    this.serverConnectionFailed.value = !(await this.postMessage(
-      lightStateUpdateRequestMessage
-    ));
-    if (this.serverConnectionFailed.value) {
-      this.checkingLightState.value = false;
       return;
     }
+    this.ui.connecting.value = true;
 
-    this.lightStateCheckTimeout = setTimeout(
-      this.onLightStateCheckTimeout,
-      this.settings.lightStateCheckTimeoutMs
+    this.ui.toaster.bake("Získávání informací ze serveru.", "download");
+    this.channel = new NtfyTopicClient(
+      this.ntfyTopic.value,
+      this.handleReceivedMessage.bind(this)
     );
+    const connected = await this.lightState.updateFromNtfyTopicClient(
+      this.channel
+    );
+
+    if (connected) {
+      this.ui.toaster.bake("Informace úspěšně načteny.", "wifi-check");
+      this.ui.connected.value = true;
+    }
+
+    this.ui.connecting.value = false;
   }
 
-  private onLightStateCheckTimeout = () => {
-    this.checkingLightState.value = false;
-    this.lightStateCheckTimedOut.value = true;
-  };
-
-  private async postMessage(message: Message) {
-    let response;
-    try {
-      response = await fetch(this.postUrl, {
-        method: "POST",
-        body: message.toString(),
-      });
-    } catch (error) {
-      return false;
-    }
-    return response.ok;
+  private handleReceivedMessage(message: string) {
+    console.log(message);
   }
 }

@@ -1,56 +1,49 @@
 <script lang="ts" setup>
-import { PropType } from "vue";
-import defaultSourceFile from "../assets/img/icon_sprite.svg";
+import iconsUrl from "../assets/img/icon_sprite.svg";
 
 const props = defineProps({
-  size: {
-    type: String as PropType<"small" | "medium" | "big" | "huge" | "enormous">,
-    default: "medium",
-  },
   iconId: { type: String, required: true },
-  title: { type: String },
-  sourceFile: { type: String, default: defaultSourceFile },
+  side: { type: Boolean, default: false },
+  big: { type: Boolean, default: false },
+  sourceFile: { type: String, default: iconsUrl },
+  title: { type: String, required: false },
 });
 </script>
 
 <template>
-  <svg role="img" class="icon" :class="props.size" aria-hidden="true">
+  <svg
+    class="icon"
+    :class="{ side: props.side, big: props.big }"
+    aria-hidden="true"
+  >
     <title v-if="title">{{ props.title }}</title>
     <use :href="`${props.sourceFile}#${props.iconId}`"></use>
   </svg>
 </template>
 
 <style lang="scss">
-.icon {
-  aspect-ratio: 1;
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-  color: currentColor;
-  margin: var(--spacing-small);
+@import "../partials/mixins";
 
-  &.small {
-    width: 16px;
-    height: 16px;
+.icon {
+  @include no-select;
+  @include no-shrink;
+  margin: var(--spacing-tiny);
+  width: var(--font-size-huge);
+  height: var(--font-size-huge);
+  display: inline;
+  fill: currentColor;
+
+  &.side {
+    margin: var(--spacing-tiny) var(--spacing-medium) var(--spacing-tiny) 0;
   }
 
   &.big {
-    width: 32px;
-    height: 32px;
-  }
+    width: var(--font-size-enormous);
+    height: var(--font-size-enormous);
 
-  &.huge {
-    width: 48px;
-    height: 48px;
+    &.side {
+      margin: var(--spacing-tiny) var(--spacing-big) var(--spacing-tiny) 0;
+    }
   }
-
-  &.enormous {
-    width: 72px;
-    height: 72px;
-  }
-}
-
-.v-btn .icon {
-  margin: 0;
 }
 </style>

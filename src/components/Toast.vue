@@ -1,50 +1,77 @@
-import { PropType, computed } from 'vue';
 <script lang="ts" setup>
-import { PropType, computed } from "vue";
-import Toast from "../modules/toast";
+import { PropType } from "vue";
 import Icon from "./Icon.vue";
+import Toast from "../modules/Toaster/toast";
 
 const props = defineProps({
   toast: { type: Object as PropType<Toast>, required: true },
-});
-
-const bgClass = computed(() => {
-  switch (props.toast.type) {
-    case "success":
-      return "bg-success";
-    case "error":
-      return "bg-error";
-    default:
-      return "";
-  }
 });
 </script>
 
 <template>
   <div
-    @click="props.toast.hide()"
-    class="toast rounded flex-center elevation-5 v-card--variant-elevated"
-    :class="bgClass"
+    :class="'toast ' + props.toast.type"
+    role="alert"
+    aria-live="assertive"
+    tabindex="0"
   >
-    <icon v-if="props.toast.iconId" :icon-id="props.toast.iconId" />
-    <div>
-      {{ props.toast.message }}
+    <icon v-if="props.toast.iconId" :icon-id="props.toast.iconId" side />
+    {{ props.toast.message }}
+    <div class="close-overlay">
+      <icon icon-id="close" side />
+      DISMISS
     </div>
   </div>
 </template>
 
 <style lang="scss">
-.toast {
-  cursor: pointer;
-  padding: var(--spacing-big);
-  width: fit-content;
-  background-color: rgb(var(--v-theme-surface));
-  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
-  border: 3px solid currentColor;
+@import "../partials/mixins";
 
-  .icon {
-    margin: 0;
-    margin-right: var(--spacing-small);
+.toast {
+  @include flex-center;
+  @include shadow;
+  @include round-border;
+  @include clickable;
+  @include no-overrender;
+  @include no-overflow;
+  @include no-select;
+  pointer-events: all;
+  margin: var(--spacing-small);
+  position: relative;
+  padding: var(--spacing-medium);
+  border-width: var(--border-width);
+  border-style: solid;
+
+  &.info {
+    border-color: var(--color-primary-accent);
+    background-color: var(--color-primary-surface-top);
+    color: var(--color-primary-text);
+
+    .close-overlay {
+      background-color: var(--color-primary-surface-top);
+    }
+  }
+
+  &.error {
+    background-color: var(--color-error-surface-top);
+    color: var(--color-error-text);
+    border-color: var(--color-error-accent);
+
+    .close-overlay {
+      background-color: var(--color-error-surface-top);
+    }
+  }
+
+  .close-overlay {
+    @include flex-center;
+    @include stretch;
+    position: fixed;
+    opacity: 0;
+    transition: opacity var(--transition-duration-medium) linear;
+
+    &:hover {
+      opacity: 0.9;
+    }
   }
 }
 </style>

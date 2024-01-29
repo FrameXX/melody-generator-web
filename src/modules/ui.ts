@@ -1,41 +1,47 @@
-import { useTheme } from "vuetify";
-import Toast, { ToastType } from "./toast";
-import { Ref, ref } from "vue";
+import { ref } from "vue";
+import Toaster from "./Toaster/toaster";
+import { setCSSVariable } from "./utils";
+
+type Theme = "light" | "dark";
 
 export default class UI {
-  private readonly theme = useTheme();
-  private readonly initialToastDurationMs = 1200;
-  private readonly toastDurationMsPerChar = 70;
-  public readonly toasts: Ref<Toast[]> = ref([]);
-  private readonly maxToastsCount = 3;
+  public readonly toaster = new Toaster();
+  public readonly connecting = ref(false);
+  public readonly connected = ref(false);
 
   constructor() {
     this.updateTheme();
+
     matchMedia("(prefers-color-scheme: dark)").addEventListener(
       "change",
       this.updateTheme
     );
   }
 
-  public createToast(
-    message: string,
-    iconId?: string,
-    type: ToastType = "info",
-    durationMs?: number
-  ) {
-    if (this.toasts.value.length > this.maxToastsCount)
-      this.toasts.value[this.toasts.value.length - 1].hide();
-
-    if (!durationMs)
-      durationMs =
-        this.initialToastDurationMs +
-        this.toastDurationMsPerChar * message.length;
-
-    new Toast(this.toasts, message, type, durationMs, iconId);
-  }
-
   private updateTheme = () => {
-    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
-    this.theme.global.name.value = dark ? "dark" : "light";
+    const matchesDark = matchMedia("(prefers-color-scheme: dark)").matches;
+    const theme: Theme = matchesDark ? "dark" : "light";
+    this.setTheme(theme);
   };
+
+  private setTheme(theme: Theme): void {
+    setCSSVariable("L-text", `var(--L-${theme}-text)`);
+    setCSSVariable("L-surface", `var(--L-${theme}-surface)`);
+    setCSSVariable("L-surface-top", `var(--L-${theme}-surface-top)`);
+    setCSSVariable("L-surface-accent", `var(--L-${theme}-surface-accent)`);
+    setCSSVariable("L-accent", `var(--L-${theme}-accent)`);
+    setCSSVariable("L-cell-white", `var(--L-${theme}-cell-white)`);
+    setCSSVariable("L-cell-black", `var(--L-${theme}-cell-black)`);
+    setCSSVariable("L-piece-fill-white", `var(--L-${theme}-piece-fill-white)`);
+    setCSSVariable("L-piece-fill-black", `var(--L-${theme}-piece-fill-black)`);
+    setCSSVariable(
+      "L-piece-stroke-white",
+      `var(--L-${theme}-piece-stroke-white)`
+    );
+    setCSSVariable(
+      "L-piece-stroke-black",
+      `var(--L-${theme}-piece-stroke-black)`
+    );
+    setCSSVariable("L-dim", `var(--L-${theme}-dim)`);
+  }
 }

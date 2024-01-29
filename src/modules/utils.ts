@@ -39,3 +39,17 @@ export function getRandomId(chars: number = 8) {
   }
   return id;
 }
+
+const DOMRoot = getDOMRoot();
+
+function getDOMRoot(): HTMLElement {
+  const root = document.querySelector(":root");
+  if (!(root instanceof HTMLElement)) {
+    throw new Error("Root DOM element wasn't found in DOM");
+  }
+  return root;
+}
+
+export function setCSSVariable(name: string, value: string) {
+  DOMRoot.style.setProperty("--" + name, value);
+}
