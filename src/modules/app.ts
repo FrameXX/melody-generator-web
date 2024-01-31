@@ -1,13 +1,14 @@
-import { Ref, reactive, ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import LightState from "./light_state";
 import UI from "./ui";
 import NtfyTopicClient from "./ntfy_topic_client";
+import MsgCmdChannelClient from "./msg_cmd_channel_client";
 
 export default class App {
   public readonly ui = new UI();
   public lightState = reactive(new LightState(this));
   public readonly ntfyTopic = ref("smart-light-channel");
-  private channel: NtfyTopicClient | undefined;
+  private channel: MsgCmdChannelClient | undefined;
 
   constructor() {
     if (!navigator.cookieEnabled) return;
@@ -32,13 +33,9 @@ export default class App {
     this.ui.connecting.value = true;
 
     this.ui.toaster.bake("Získávání informací ze serveru.", "download");
-    this.channel = new NtfyTopicClient(
-      this.ntfyTopic.value,
-      this.handleReceivedMessage.bind(this)
-    );
-    const connected = await this.lightState.updateFromNtfyTopicClient(
-      this.channel
-    );
+    const ntfyTopicClient = new NtfyTopicClient(this.ntfyTopic.value);
+    const channel = new MsgCmdChannelClient(ntfyTopicClient);
+    const connected = await this.lightState.updateFromMsgCmdChannel(channel);
 
     if (connected) {
       this.ui.toaster.bake("Informace úspěšně načteny.", "wifi-check");

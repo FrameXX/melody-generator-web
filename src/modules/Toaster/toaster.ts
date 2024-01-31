@@ -10,12 +10,12 @@ export default class Toaster {
     private readonly toastDurationMsPerChar = 70
   ) {}
 
-  public bake(
+  public bake = (
     message: string,
     iconId?: string,
     type: ToastType = "info",
     durationMs?: number
-  ) {
+  ) => {
     if (this.isUsingFullCapacity) this.removeMostBaked();
 
     if (!durationMs)
@@ -27,7 +27,7 @@ export default class Toaster {
     this.toasts.value.push(toast);
 
     setTimeout(this.remove.bind(this, toast.id), durationMs);
-  }
+  };
 
   get isUsingFullCapacity() {
     return this.toasts.value.length >= this.toastCapacity;
@@ -35,7 +35,7 @@ export default class Toaster {
 
   public remove = (toastId: string) => {
     this.toasts.value = this.toasts.value.filter(
-      (toast) => toast.id != toastId
+      (toast) => toast.id !== toastId
     );
   };
 

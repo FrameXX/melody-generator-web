@@ -1,10 +1,8 @@
-export default class NtfyTopicClient {
+export default class NtfyTopicClient extends EventTarget {
   private eventSource: EventSource;
 
-  constructor(
-    private topic: string,
-    private receivedMessageHandler: (message: string) => any
-  ) {
+  constructor(private topic: string) {
+    super();
     this.eventSource = new EventSource(this.eventSourceUrl);
     this.eventSource.addEventListener(
       "message",
@@ -14,7 +12,8 @@ export default class NtfyTopicClient {
 
   private handleReceivedEvent(event: MessageEvent) {
     const message = JSON.parse(event.data).message;
-    this.receivedMessageHandler(message);
+    const messageEvent = new CustomEvent("message", { detail: message });
+    this.dispatchEvent(messageEvent);
   }
 
   private get eventSourceUrl() {

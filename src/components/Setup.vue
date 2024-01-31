@@ -42,7 +42,7 @@ onMounted(() => {
           Nejprve je třeba zadat název kanálu/tématu serveru ntfy na které je
           světlo připojené, nebo můžete zkusit použít výchozí hodnotu. (jsou
           povolena pouze malá a velká písmena anglické abecedy, čísla,
-          podtržítko a pomlčka.)
+          podtržítka a pomlčky.)
         </p>
         <input
           id="input-ntfy-channel-name"

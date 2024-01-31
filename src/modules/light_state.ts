@@ -1,6 +1,6 @@
 import App from "./app";
 import MsgCmd from "./msg_cmd";
-import NtfyTopicClient from "./ntfy_topic_client";
+import MsgCmdChannelClient from "./msg_cmd_channel_client";
 
 export default class LightState {
   constructor(
@@ -13,7 +13,7 @@ export default class LightState {
     public hueAnimationIntervalMs: number = 3000
   ) {}
 
-  public updateFromMessage(message: MsgCmd) {
+  public updateFromMsgCmd(message: MsgCmd) {
     if (message.args.length !== 6)
       throw new Error(
         `Light state message has an invalid argument count of ${message.args.length}`
@@ -27,38 +27,61 @@ export default class LightState {
     this.hueAnimationIntervalMs = message.args[5];
   }
 
-  private requestUpdate(ntfyTopicClient: NtfyTopicClient) {
-    ntfyTopicClient.sendMessage("0");
+  private updateFromLight(channel: MsgCmdChannelClient): Promise<boolean> {
+    this.app.ui.toaster.bake("Vyčkávání na aktualiaci od světla.", "wifi");
+
+    const msgCmd = new MsgCmd(0);
+    channel.sendMsgCmd(msgCmd);
+    return new Promise((resolve) => {
+      channel.addEventListener("msgcmd", (event) => {
+        const msgCmd = (event as CustomEvent).detail as MsgCmd;
+        if (msgCmd.cmdId !== 1) return;
+        this.updateFromMsgCmd(msgCmd);
+        resolve(true);
+      });
+
+      window.setTimeout(() => {
+        this.app.ui.toaster.bake(
+          "Čas na odpověď světla vypršel.",
+          "wifi-remove",
+          "error"
+        );
+        resolve(false);
+      }, 9000);
+    });
   }
 
-  public async updateFromNtfyTopicClient(
-    ntfyTopicClient: NtfyTopicClient
+  public async updateFromMsgCmdChannel(
+    channel: MsgCmdChannelClient
   ): Promise<boolean> {
-    let allMessages: string[];
+    let allMsgCmds: MsgCmd[];
 
     try {
-      allMessages = await ntfyTopicClient.getAllMessages();
+      allMsgCmds = await channel.getAllMsgCmd();
     } catch (error) {
       console.error(error);
       this.app.ui.toaster.bake(
         "Připojení k serveru se nezdařilo.",
-        "wifi-remove"
+        "wifi-remove",
+        "error"
       );
       return false;
     }
 
-    console.log(allMessages);
-
-    for (const message of allMessages) {
-      const messageCmd = MsgCmd.fromString(message);
-      if (messageCmd.cmdId !== 1 && messageCmd.cmdId !== 2) continue;
-      this.updateFromMessage(messageCmd);
+    for (const msgCmd of allMsgCmds) {
+      if (msgCmd.cmdId !== 1 && msgCmd.cmdId !== 2) continue;
+      this.updateFromMsgCmd(msgCmd);
       return true;
     }
+    this.app.ui.toaster.bake(
+      "Aktualizace z cache zpráv se nezdařila.",
+      "wifi-remove",
+      "error"
+    );
 
-    this.requestUpdate(ntfyTopicClient);
+    const updated = await this.updateFromLight(channel);
 
-    return false;
+    return updated;
   }
 
   public toMessage(): MsgCmd {
