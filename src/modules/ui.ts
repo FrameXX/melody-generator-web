@@ -1,4 +1,3 @@
-import { ref } from "vue";
 import Toaster from "./Toaster/toaster";
 import { setCSSVariable } from "./utils";
 
@@ -6,8 +5,6 @@ type Theme = "light" | "dark";
 
 export default class UI {
   public readonly toaster = new Toaster();
-  public readonly connecting = ref(false);
-  public readonly connected = ref(false);
 
   constructor() {
     this.updateTheme();
