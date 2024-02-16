@@ -1,13 +1,14 @@
+import { Note } from "./note";
+import { NoteAccidental } from "./note_accidental";
+import { NoteValue } from "./note_value";
+
 export default class Tone {
   constructor(
-    private readonly startFrequency: number,
-    private readonly endFrequency: number,
-    private readonly duration: number,
-    private readonly startVolume: number = 50,
-    private readonly endVolume: number = 50
+    private readonly accidental: NoteAccidental,
+    private readonly note: Note,
+    private readonly octave: number,
+    private readonly value: NoteValue
   ) {}
 
-  public toString() {
-    return `${this.startFrequency} ${this.endFrequency} ${this.startVolume} ${this.endVolume} ${this.duration}`;
-  }
+  public toString() {}
 }
