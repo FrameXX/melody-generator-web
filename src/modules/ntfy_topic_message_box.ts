@@ -1,4 +1,4 @@
-export default class NtfyTopicMessageBox {
+export default class NtfyTopicMessenger {
   constructor(public topic: string) {}
 
   private get postAddress() {
