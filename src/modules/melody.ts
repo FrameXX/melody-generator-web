@@ -1,4 +1,4 @@
-import Tone from "./tone";
+import Tone from "./note";
 
 export default class Melody {
   constructor(public name: string, private tones: Tone[]) {}
