@@ -40,6 +40,6 @@ export default class Toaster {
   };
 
   private removeMostBaked() {
-    this.remove(this.toasts.value[this.toasts.value.length - 1].id);
+    this.remove(this.toasts.value[0].id);
   }
 }

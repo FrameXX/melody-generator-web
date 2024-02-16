@@ -1,19 +1,16 @@
 <script lang="ts" setup>
 import Toaster from "./components/Toaster.vue";
 import App from "./modules/app";
-import EditTone from "./components/EditTone.vue";
-import MelodyVisualisation from "./components/MelodyVisualisation.vue";
-import MenuButton from "./components/MenuButton.vue";
+import BottomNavBar from "./components/BottomNavBar.vue";
 
 const app = new App();
 </script>
 
 <template>
   <main>
-    <melody-visualisation />
-    <edit-tone />
+    <div id="bottom-nav-bar-placeholder"></div>
   </main>
-  <menu-button />
+  <bottom-nav-bar />
   <toaster :toaster="app.ui.toaster" />
 </template>
 
@@ -27,6 +24,10 @@ const app = new App();
   display: flex;
   justify-content: center;
   background-color: var(--color-primary-surface);
+}
+
+#bottom-nav-bar-placeholder {
+  height: var(--bottom-nav-bar-height);
 }
 
 @media screen and (min-width: 760px) {
