@@ -1,53 +1,47 @@
 <script lang="ts" setup>
 import Toaster from "./components/Toaster.vue";
 import App from "./modules/app";
-import BottomNavBar from "./components/BottomNavBar.vue";
-import MelodiesTab from "./components/MelodiesTab.vue";
-import CompositionTab from "./components/CompositionTab.vue";
-import PlaybackTab from "./components/PlaybackTab.vue";
-import { ref } from "vue";
+import TouchArea from "./components/TouchArea.vue";
+import Icon from "./components/Icon.vue";
 
 const app = new App();
-
-export type NavItem = "melodies" | "composition" | "playback";
-
-const activeNavItem = ref<NavItem>("composition");
-
-function onNavItemClick(item: NavItem) {
-  activeNavItem.value = item;
-}
 </script>
 
 <template>
   <main>
-    <melodies-tab v-show="activeNavItem === 'melodies'" />
-    <composition-tab v-show="activeNavItem === 'composition'" />
-    <playback-tab v-show="activeNavItem === 'playback'" />
-    <div id="bottom-nav-bar-placeholder"></div>
+    <touch-area />
+    <div id="action-bar">
+      <button>
+        <icon icon-id="record" />
+      </button>
+      <button>
+        <icon icon-id="stop" />
+      </button>
+      <button>
+        <icon icon-id="play" />
+      </button>
+    </div>
   </main>
-  <bottom-nav-bar :active-item="activeNavItem" @item-click="onNavItemClick" />
   <toaster :toaster="app.ui.toaster" />
 </template>
 
 <style lang="scss">
 @import "./partials/mixins";
 
-#app main {
+main {
   width: 100%;
   height: 100%;
-  text-align: center;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   background-color: var(--color-primary-surface);
 }
 
-#bottom-nav-bar-placeholder {
-  height: var(--bottom-nav-bar-height);
-}
-
-@media screen and (min-width: 760px) {
-  #content-wrapper {
-    columns: 2;
-  }
+#action-bar {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 90px;
+  background-color: var(--color-primary-surface-top);
+  box-shadow: var(--box-shadow);
 }
 </style>

@@ -1,13 +1,12 @@
-import { NoteAccidental } from "./note_accidental";
 import NoteFrequencyRules from "./note_frequency_rules";
 import { NotePitch, note_pitches } from "./note_pitch";
 import { NoteValue } from "./note_value";
 import Tone from "./tone";
-import ToneDerivative from "./tone_derivative";
+import Notation from "./notation";
 
-export default class Note extends ToneDerivative {
+export default class Note extends Notation {
   constructor(
-    private readonly accidental: NoteAccidental,
+    private readonly accidental: boolean,
     private readonly note: NotePitch,
     private readonly octave: number,
     private readonly value: NoteValue
@@ -16,12 +15,16 @@ export default class Note extends ToneDerivative {
   }
 
   public get index() {
-    return note_pitches.indexOf(this.note) + this.octave * 7;
+    const indexAccidental = this.accidental ? 1 : 0;
+    const index =
+      note_pitches.indexOf(this.note) * 2 + this.octave * 14 + indexAccidental;
+    return index;
   }
 
   public getFrequency(noteFrequencyRules: NoteFrequencyRules) {
     const noteIndex = this.index + noteFrequencyRules.noteIndexShift;
-    const frequency = 2 ** (noteIndex / 7) * noteFrequencyRules.firstCFrequency;
+    const frequency =
+      2 ** (noteIndex / 14) * noteFrequencyRules.firstCFrequency;
     return frequency;
   }
 
@@ -60,11 +63,5 @@ export default class Note extends ToneDerivative {
     const durationMs = this.getDurationMs(quarterDurationMs);
     const tone = new Tone(frequency, frequency, 50, 50, durationMs);
     return tone;
-  }
-
-  public toString() {
-    return (
-      `n ${this.accidental} ${this.note} ${this.octave}, ${this.value}` + "\n"
-    );
   }
 }

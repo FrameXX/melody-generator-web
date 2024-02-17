@@ -1,8 +1,8 @@
 import { RestValue } from "./rest_value";
 import Tone from "./tone";
-import ToneDerivative from "./tone_derivative";
+import Notation from "./notation";
 
-export default class Rest extends ToneDerivative {
+export default class Rest extends Notation {
   constructor(private readonly value: RestValue) {
     super();
   }
@@ -31,6 +31,6 @@ export default class Rest extends ToneDerivative {
   }
 
   public toString() {
-    return `r ${this.value}`;
+    return `0 ${this.value}`;
   }
 }

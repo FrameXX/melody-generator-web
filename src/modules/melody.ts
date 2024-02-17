@@ -1,8 +1,8 @@
 import NoteFrequencyRules from "./note_frequency_rules";
-import ToneDerivative from "./tone_derivative";
+import Notation from "./notation";
 
 export default class Melody {
-  constructor(public name: string, private notes: ToneDerivative[]) {}
+  constructor(public name: string, public notes: Notation[]) {}
 
   private isToneOnIndex(index: number) {
     return index < 0 || index >= this.notes.length;
