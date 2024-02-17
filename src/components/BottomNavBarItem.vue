@@ -31,6 +31,7 @@ const props = defineProps({
   padding: var(--spacing-small);
   flex-direction: column;
   font-size: var(--font-size-small);
+  transition: transform var(--transition-duration-short) linear;
 
   &.active {
     transform: scale(1.1);

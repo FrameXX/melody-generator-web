@@ -2,15 +2,28 @@
 import Toaster from "./components/Toaster.vue";
 import App from "./modules/app";
 import BottomNavBar from "./components/BottomNavBar.vue";
+import Tab from "./components/Tab.vue";
+import { ref } from "vue";
 
 const app = new App();
+
+export type NavItem = "melodies" | "composition" | "playback";
+
+const activeItem = ref<NavItem>("composition");
+
+function onNavItemClick(item: NavItem) {
+  activeItem.value = item;
+}
 </script>
 
 <template>
   <main>
+    <tab />
+    <tab />
+    <tab />
     <div id="bottom-nav-bar-placeholder"></div>
   </main>
-  <bottom-nav-bar />
+  <bottom-nav-bar :active-item="activeItem" @item-click="onNavItemClick" />
   <toaster :toaster="app.ui.toaster" />
 </template>
 
