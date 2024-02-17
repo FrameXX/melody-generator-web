@@ -1,33 +1,48 @@
-import Tone from "./note";
+import NoteFrequencyRules from "./note_frequency_rules";
+import ToneDerivative from "./tone_derivative";
 
 export default class Melody {
-  constructor(public name: string, private tones: Tone[]) {}
+  constructor(public name: string, private notes: ToneDerivative[]) {}
 
   private isToneOnIndex(index: number) {
-    return index < 0 || index >= this.tones.length;
+    return index < 0 || index >= this.notes.length;
   }
 
-  public get toneCount() {
-    return this.tones.length;
+  public get noteCount() {
+    return this.notes.length;
+  }
+
+  public toSpeakerCommand(
+    noteFrequencyRules: NoteFrequencyRules,
+    quarterDurationMs: number
+  ) {
+    const tones = this.notes.map((note) =>
+      note.toTone(quarterDurationMs, noteFrequencyRules)
+    );
+    let command = tones[0].toString();
+    for (let i = 1; i < tones.length; i++) {
+      command += " " + tones[i].toString();
+    }
+    return command;
   }
 
   public toString() {
     let string = "";
-    for (const tone of this.tones) {
-      string += ` ${tone.toString()}`;
+    for (const note of this.notes) {
+      string += ` ${note.toString()}`;
     }
     return string.substring(1, string.length - 1);
   }
 
   public removeTone(index: number) {
     if (!this.isToneOnIndex(index))
-      throw new Error(`There's no tone on index ${index}.`);
-    this.tones.splice(index, 1);
+      throw new Error(`There's no note on index ${index}.`);
+    this.notes.splice(index, 1);
   }
 
   public getTone(index: number) {
     if (!this.isToneOnIndex(index))
-      throw new Error(`There's no tone on index ${index}.`);
-    return this.tones[index];
+      throw new Error(`There's no note on index ${index}.`);
+    return this.notes[index];
   }
 }

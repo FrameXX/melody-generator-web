@@ -3,14 +3,17 @@ import NoteFrequencyRules from "./note_frequency_rules";
 import { NotePitch, note_pitches } from "./note_pitch";
 import { NoteValue } from "./note_value";
 import Tone from "./tone";
+import ToneDerivative from "./tone_derivative";
 
-export default class Note {
+export default class Note extends ToneDerivative {
   constructor(
     private readonly accidental: NoteAccidental,
     private readonly note: NotePitch,
     private readonly octave: number,
     private readonly value: NoteValue
-  ) {}
+  ) {
+    super();
+  }
 
   public get index() {
     return note_pitches.indexOf(this.note) + this.octave * 7;
@@ -49,11 +52,9 @@ export default class Note {
     }
   }
 
-  public toSpeakerCommand() {}
-
   public toTone(
-    noteFrequencyRules: NoteFrequencyRules,
-    quarterDurationMs: number
+    quarterDurationMs: number,
+    noteFrequencyRules: NoteFrequencyRules
   ) {
     const frequency = this.getFrequency(noteFrequencyRules);
     const durationMs = this.getDurationMs(quarterDurationMs);
@@ -63,7 +64,7 @@ export default class Note {
 
   public toString() {
     return (
-      `${this.accidental} ${this.note} ${this.octave}, ${this.value}` + "\n"
+      `n ${this.accidental} ${this.note} ${this.octave}, ${this.value}` + "\n"
     );
   }
 }
