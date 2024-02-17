@@ -14,6 +14,7 @@ const props = defineProps({
     class="item-bottom-nav-bar"
     role="button"
     tabindex="0"
+    :title="props.title"
   >
     <icon :icon-id="props.iconId" />
     <div>{{ props.title }}</div>

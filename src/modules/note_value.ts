@@ -1,3 +1,14 @@
-const noteValues = ["w", "h", "q", "e", "s", "w.", "h.", "q.", "e.", "s."];
+export const noteValues = [
+  "w",
+  "w.",
+  "h",
+  "h.",
+  "q",
+  "q.",
+  "e",
+  "e.",
+  "s",
+  "s.",
+] as const;
 
-export type NoteValue = typeof noteValues;
+export type NoteValue = (typeof noteValues)[number];
