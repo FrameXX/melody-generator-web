@@ -5,6 +5,7 @@ import NtfyTopicMessenger from "./ntfy_topic_message_box";
 export default class App {
   public readonly ui = new UI();
   public readonly ntfyTopic = ref("melody-generator");
+  // @ts-ignore
   private speakerMessenger = new NtfyTopicMessenger(this.ntfyTopic.value);
 
   constructor() {}

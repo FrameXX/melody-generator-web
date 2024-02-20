@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import iconsUrl from "../assets/img/icon_sprite.svg";
+import iconsUrl from "../assets/img/icons.svg";
 
 const props = defineProps({
   iconId: { type: String, required: true },

@@ -2,6 +2,7 @@ export default class Oscillator {
   private readonly audioContext: AudioContext;
   private readonly oscillatorNode: OscillatorNode;
   private readonly gainNode: GainNode;
+  // @ts-ignore
   private isPlaying: boolean = false;
 
   constructor() {
