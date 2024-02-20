@@ -1,24 +1,22 @@
 <script lang="ts" setup>
 import Toaster from "./components/Toaster.vue";
 import App from "./modules/app";
-import TouchArea from "./components/TouchArea.vue";
 import Icon from "./components/Icon.vue";
-
+import TonePad from "./components/TonePad.vue";
 const app = new App();
 </script>
 
 <template>
   <main>
-    <touch-area />
-    <div id="action-bar">
-      <button>
+    <div id="tone-pad-wrapper">
+      <tone-pad />
+    </div>
+    <div id="actions">
+      <button title="">
         <icon icon-id="record" />
       </button>
       <button>
-        <icon icon-id="stop" />
-      </button>
-      <button>
-        <icon icon-id="play" />
+        <icon title="přehrát" icon-id="play" />
       </button>
     </div>
   </main>
@@ -36,12 +34,24 @@ main {
   background-color: var(--color-primary-surface);
 }
 
-#action-bar {
+#actions {
   display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  height: 90px;
-  background-color: var(--color-primary-surface-top);
-  box-shadow: var(--box-shadow);
+  flex-direction: column-reverse;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  padding: var(--spacing-medium);
+  gap: var(--spacing-medium);
+
+  button {
+    padding: var(--spacing-small);
+    margin: 0;
+  }
+}
+
+#tone-pad-wrapper {
+  width: 100%;
+  height: 100%;
+  @include flex-center;
 }
 </style>

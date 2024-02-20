@@ -79,7 +79,7 @@
   --S-primary-surface: calc(5% * var(--saturation-multiplier));
   --S-primary-surface-top: calc(5% * var(--saturation-multiplier));
   --S-primary-surface-accent: calc(30% * var(--saturation-multiplier));
-  --S-primary-accent: calc(55% * var(--saturation-multiplier));
+  --S-primary-accent: calc(38% * var(--saturation-multiplier));
 
   --S-cell: calc(8% * var(--saturation-multiplier));
   --S-backdrop: calc(6% * var(--saturation-multiplier));
@@ -104,7 +104,7 @@
   --L-dark-text: 95%;
   --L-dark-surface: 10%;
   --L-dark-surface-top: 16%;
-  --L-dark-surface-accent: 25%;
+  --L-dark-surface-accent: 30%;
   --L-dark-accent: 45%;
   --L-dark-cell-white: 76%;
   --L-dark-cell-black: 23%;
