@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+// @ts-ignore
+import iconUrl from "./assets/img/icons.svg";
 import Toaster from "./components/Toaster.vue";
 import App from "./modules/app";
 import Icon from "./components/Icon.vue";

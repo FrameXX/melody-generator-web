@@ -9,7 +9,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div id="toaster" class="flex-column flex-center">
+  <div class="toaster flex-column flex-center">
     <transition-group name="slide-up">
       <toast
         v-for="toast in props.toaster.toasts.value"
@@ -23,7 +23,7 @@ const props = defineProps({
 </template>
 
 <style lang="scss">
-#toaster {
+.toaster {
   align-items: center;
   position: fixed;
   display: flex;
