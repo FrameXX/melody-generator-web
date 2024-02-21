@@ -1,4 +1,4 @@
-export default class Sound {
+export default class SoundWave {
   constructor(
     private readonly startFrequency: number,
     private readonly endFrequency: number,

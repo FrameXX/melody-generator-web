@@ -1,33 +1,33 @@
-import Sound from "./sound";
+import SoundWave from "./soundwave";
 
 export default class Melody {
-  constructor(public name: string, public sounds: Sound[]) {}
+  constructor(public name: string, public soundwaves: SoundWave[]) {}
 
   private isToneOnIndex(index: number) {
-    return index < 0 || index >= this.sounds.length;
+    return index < 0 || index >= this.soundwaves.length;
   }
 
-  public get soundCount() {
-    return this.sounds.length;
+  public get soundwaveCount() {
+    return this.soundwaves.length;
   }
 
   public toString() {
     let string = "";
-    for (const sound of this.sounds) {
-      string += ` ${sound.toString()}`;
+    for (const soundwave of this.soundwaves) {
+      string += ` ${soundwave.toString()}`;
     }
     return string.substring(1, string.length - 1);
   }
 
   public removeTone(index: number) {
     if (!this.isToneOnIndex(index))
-      throw new Error(`There's no sound on index ${index}.`);
-    this.sounds.splice(index, 1);
+      throw new Error(`There's no soundwave on index ${index}.`);
+    this.soundwaves.splice(index, 1);
   }
 
   public getTone(index: number) {
     if (!this.isToneOnIndex(index))
-      throw new Error(`There's no sound on index ${index}.`);
-    return this.sounds[index];
+      throw new Error(`There's no soundwave on index ${index}.`);
+    return this.soundwaves[index];
   }
 }

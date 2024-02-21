@@ -5,7 +5,6 @@ const props = defineProps({
   iconId: { type: String, required: true },
   side: { type: Boolean, default: false },
   big: { type: Boolean, default: false },
-  sourceFile: { type: String, default: iconsUrl },
   title: { type: String, required: false },
 });
 </script>
@@ -17,7 +16,7 @@ const props = defineProps({
     aria-hidden="true"
   >
     <title v-if="title">{{ props.title }}</title>
-    <use :href="`${props.sourceFile}#${props.iconId}`"></use>
+    <use :href="`${iconsUrl}#${props.iconId}`"></use>
   </svg>
 </template>
 
