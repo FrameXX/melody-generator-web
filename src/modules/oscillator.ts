@@ -1,3 +1,5 @@
+import OscillatorRecorder from "./oscillator_recorder";
+
 export default class Oscillator {
   private readonly audioContext: AudioContext;
   private readonly oscillatorNode: OscillatorNode;
@@ -5,7 +7,8 @@ export default class Oscillator {
   public isPlaying: boolean = false;
   public playBackStartTime = 0;
 
-  constructor() {
+  // @ts-ignore
+  constructor(private readonly recorder?: OscillatorRecorder) {
     this.audioContext = new AudioContext();
     this.oscillatorNode = this.audioContext.createOscillator();
     this.gainNode = this.audioContext.createGain();

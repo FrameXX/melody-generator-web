@@ -2,6 +2,7 @@
 import { PropType } from "vue";
 import Tone from "../modules/tone";
 import Oscillator from "../modules/oscillator";
+import OscillatorRecorder from "../modules/oscillator_recorder";
 
 const props = defineProps({
   tones: {
@@ -29,6 +30,7 @@ const props = defineProps({
       new Tone("G5", 783.9909),
     ],
   },
+  recorder: { type: Object as PropType<OscillatorRecorder> },
 });
 
 const emit = defineEmits<{
@@ -36,7 +38,7 @@ const emit = defineEmits<{
   toneEnd: [];
 }>();
 
-const osciallator = new Oscillator();
+const osciallator = new Oscillator(props.recorder);
 let playingToneName: null | string = null;
 let activePad: null | HTMLElement = null;
 
@@ -58,7 +60,7 @@ function startTone(event: PointerEvent, tone: Tone) {
 
 function endTone() {
   if (!osciallator.isPlaying) return;
-  const gainNodeLinearRampDelay = osciallator.playbackDuration / 1600;
+  const gainNodeLinearRampDelay = osciallator.playbackDuration / 1700;
   osciallator.stopPlaying(gainNodeLinearRampDelay);
   playingToneName = null;
 
@@ -159,6 +161,8 @@ addEventListener("visibilitychange", () => {
 
     &.accented {
       --L-dark-accent: 22%;
+      padding: var(--spacing-small);
+      font-size: var(--font-size-small);
     }
 
     &.tone-0 {
