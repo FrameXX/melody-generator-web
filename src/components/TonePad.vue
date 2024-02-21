@@ -51,9 +51,11 @@ function toneFeedback(tone: Tone) {
     @pointerup="osciallator.stopPlaying()"
   >
     <div
+      role="button"
+      tabindex="0"
+      class="tone"
       v-for="(tone, index) in props.tones"
       :key="tone.name"
-      class="tone"
       :class="`tone-${index % 12} ${tone.accented ? 'accented' : ''}`"
       @pointerdown="toneFeedback(tone)"
     >
