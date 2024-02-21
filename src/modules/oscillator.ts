@@ -2,8 +2,8 @@ export default class Oscillator {
   private readonly audioContext: AudioContext;
   private readonly oscillatorNode: OscillatorNode;
   private readonly gainNode: GainNode;
-  // @ts-ignore
-  private isPlaying: boolean = false;
+  public isPlaying: boolean = false;
+  public playBackStartTime = 0;
 
   constructor() {
     this.audioContext = new AudioContext();
@@ -16,16 +16,37 @@ export default class Oscillator {
     this.oscillatorNode.start(0);
   }
 
-  public play(frequency: number, type: OscillatorType = "sine") {
+  public get playbackDuration() {
+    return Date.now() - this.playBackStartTime;
+  }
+
+  public setFrequency(frequency: number) {
+    this.oscillatorNode.frequency.value = frequency;
+  }
+
+  public play(
+    frequency: number,
+    type: OscillatorType = "square",
+    gainNodeLinearRampDelay = 0.1
+  ) {
     if (this.audioContext.state != "running") this.audioContext.resume();
     this.oscillatorNode.type = type;
     this.oscillatorNode.frequency.value = frequency;
-    this.gainNode.gain.setValueAtTime(1, this.audioContext.currentTime);
+    this.gainNode.gain.cancelScheduledValues(this.audioContext.currentTime);
+    this.gainNode.gain.linearRampToValueAtTime(
+      1,
+      this.audioContext.currentTime + gainNodeLinearRampDelay
+    );
+    this.playBackStartTime = Date.now();
     this.isPlaying = true;
   }
 
-  public stopPlaying() {
-    this.gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+  public stopPlaying(gainNodeLinearRampDelay = 0.1) {
+    gainNodeLinearRampDelay = Math.max(gainNodeLinearRampDelay, 0.1);
+    this.gainNode.gain.linearRampToValueAtTime(
+      0,
+      this.audioContext.currentTime + gainNodeLinearRampDelay
+    );
     this.isPlaying = false;
   }
 }

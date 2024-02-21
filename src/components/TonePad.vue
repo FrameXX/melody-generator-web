@@ -37,18 +37,76 @@ const emit = defineEmits<{
 }>();
 
 const osciallator = new Oscillator();
+let playingToneName: null | string = null;
+let activePad: null | HTMLElement = null;
 
-function toneFeedback(tone: Tone) {
+function setActivePad(value: null | HTMLElement) {
+  if (activePad) activePad.classList.remove("active");
+  activePad = value;
+  if (!activePad) return;
+  activePad.classList.add("active");
+}
+
+function startTone(event: PointerEvent, tone: Tone) {
   navigator.vibrate(30);
   osciallator.play(tone.frequency);
+  playingToneName = tone.name;
+
+  if (!(event.target instanceof HTMLElement)) return;
+  setActivePad(event.target);
 }
+
+function endTone() {
+  if (!osciallator.isPlaying) return;
+  const gainNodeLinearRampDelay = osciallator.playbackDuration / 1600;
+  osciallator.stopPlaying(gainNodeLinearRampDelay);
+  playingToneName = null;
+
+  setActivePad(null);
+}
+
+function transitionTone(newTone: Tone, pad: HTMLElement) {
+  osciallator.setFrequency(newTone.frequency);
+  setActivePad(pad);
+}
+
+function trackTouch(event: TouchEvent) {
+  if (!playingToneName) return;
+  const touch = event.touches[0];
+  const x = touch.clientX;
+  const y = touch.clientY;
+  const pad = document.elementFromPoint(x, y);
+  if (!pad) return;
+  if (!(pad instanceof HTMLElement)) return;
+
+  const toneName = pad.dataset.name;
+  if (!toneName) return;
+  if (toneName === playingToneName) return;
+  const toneFrequency = pad.dataset.frequency;
+  if (!toneFrequency) return;
+  const newTone = new Tone(toneName, +toneFrequency);
+  transitionTone(newTone, pad);
+}
+
+function onMouseEnter(event: MouseEvent, tone: Tone) {
+  if (!playingToneName) return;
+  if (tone.name === playingToneName) return;
+  if (!(event.target instanceof HTMLElement)) return;
+  setActivePad(event.target);
+  transitionTone(tone, event.target);
+}
+
+addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") endTone();
+});
 </script>
 
 <template>
   <div
     class="tone-pad"
-    @pointerleave="osciallator.stopPlaying()"
-    @pointerup="osciallator.stopPlaying()"
+    @touchend="endTone()"
+    @pointerup="endTone()"
+    @touchmove="trackTouch($event)"
   >
     <div
       role="button"
@@ -57,7 +115,10 @@ function toneFeedback(tone: Tone) {
       v-for="(tone, index) in props.tones"
       :key="tone.name"
       :class="`tone-${index % 12} ${tone.accented ? 'accented' : ''}`"
-      @pointerdown="toneFeedback(tone)"
+      :data-name="tone.name"
+      :data-frequency="tone.frequency"
+      @mouseenter="onMouseEnter($event, tone)"
+      @pointerdown="startTone($event, tone)"
     >
       <b class="name">{{ tone.name }}</b>
       <div class="frequency">{{ tone.frequency }}Hz</div>
@@ -72,6 +133,8 @@ function toneFeedback(tone: Tone) {
   width: 100%;
 
   .tone {
+    cursor: pointer;
+    overscroll-behavior: none;
     display: flex;
     user-select: none;
     background-color: var(--color-primary-accent);
@@ -86,8 +149,12 @@ function toneFeedback(tone: Tone) {
     transition: translate var(--transition-duration-short)
       var(--transition-timing-jump);
 
-    &:active {
-      translate: 2px 4px;
+    &:hover {
+      translate: 5px;
+    }
+
+    &.active {
+      translate: 10px;
     }
 
     &.accented {
