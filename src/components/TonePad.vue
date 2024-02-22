@@ -2,7 +2,6 @@
 import { PropType } from "vue";
 import Tone from "../modules/tone";
 import Oscillator from "../modules/oscillator";
-import OscillatorRecorder from "../modules/oscillator_recorder";
 
 const props = defineProps({
   tones: {
@@ -30,7 +29,7 @@ const props = defineProps({
       new Tone("G5", 783.9909),
     ],
   },
-  recorder: { type: Object as PropType<OscillatorRecorder> },
+  oscillator: { type: Object as PropType<Oscillator>, required: true },
 });
 
 const emit = defineEmits<{
@@ -38,7 +37,6 @@ const emit = defineEmits<{
   toneEnd: [];
 }>();
 
-const osciallator = new Oscillator(props.recorder);
 let playingToneName: null | string = null;
 let activePad: null | HTMLElement = null;
 
@@ -51,7 +49,7 @@ function setActivePad(value: null | HTMLElement) {
 
 function startTone(event: PointerEvent, tone: Tone) {
   navigator.vibrate(30);
-  osciallator.play(tone.frequency);
+  props.oscillator.play(tone.frequency);
   playingToneName = tone.name;
 
   if (!(event.target instanceof HTMLElement)) return;
@@ -59,16 +57,21 @@ function startTone(event: PointerEvent, tone: Tone) {
 }
 
 function endTone() {
-  if (!osciallator.isPlaying) return;
-  const gainNodeLinearRampDelay = osciallator.playbackDuration / 1700;
-  osciallator.stopPlaying(gainNodeLinearRampDelay);
+  if (!props.oscillator.isPlaying) return;
+
+  const gainNodeLinearRampDelay = Math.min(
+    props.oscillator.playbackDurationMs / 1700,
+    1
+  );
+  props.oscillator.stopPlaying(gainNodeLinearRampDelay);
   playingToneName = null;
 
   setActivePad(null);
 }
 
 function transitionTone(newTone: Tone, pad: HTMLElement) {
-  osciallator.setFrequency(newTone.frequency);
+  props.oscillator.play(newTone.frequency);
+  playingToneName = newTone.name;
   setActivePad(pad);
 }
 
@@ -109,6 +112,7 @@ addEventListener("visibilitychange", () => {
     @touchend="endTone()"
     @pointerup="endTone()"
     @touchmove="trackTouch($event)"
+    @mouseleave="endTone()"
   >
     <div
       role="button"
