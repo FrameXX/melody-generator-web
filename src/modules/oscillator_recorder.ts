@@ -2,6 +2,8 @@ import Melody from "./melody";
 import OscillatorFinishedPlayback from "./oscillator_finished_playback";
 import SoundWave from "./soundwave";
 
+const recordingSoundwaveVolume = 30;
+
 export default class OscillatorRecorder {
   public recording: Melody = new Melody([]);
 
@@ -10,16 +12,16 @@ export default class OscillatorRecorder {
       playback.frequency,
       playback.frequency,
       0,
-      100,
-      playback.startGainNodeLinearRampDelay
+      recordingSoundwaveVolume,
+      playback.startGainNodeLinearRampDelay * 1000
     );
     this.recording.pushSoundwave(startingSoundwave);
 
     const soundwave = new SoundWave(
       playback.frequency,
       playback.frequency,
-      100,
-      100,
+      recordingSoundwaveVolume,
+      recordingSoundwaveVolume,
       playback.durationMs
     );
     this.recording.pushSoundwave(soundwave);
@@ -27,9 +29,9 @@ export default class OscillatorRecorder {
     const finishingSoundwawe = new SoundWave(
       playback.frequency,
       playback.frequency,
-      100,
+      recordingSoundwaveVolume,
       0,
-      playback.finishGainNodeLinearRampDelay
+      playback.finishGainNodeLinearRampDelay * 1000
     );
     this.recording.pushSoundwave(finishingSoundwawe);
   }

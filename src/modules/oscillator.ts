@@ -35,6 +35,16 @@ export default class Oscillator {
     gainNodeLinearRampDelay = 0.1,
     oscillatorType: OscillatorType = "square"
   ) {
+    if (this.isPlaying && this.playbackFisnishCallback) {
+      const playback = new OscillatorFinishedPlayback(
+        this.playingFrequency,
+        this.playbackDurationMs,
+        this.startGainNodeLinearRampDelay,
+        gainNodeLinearRampDelay
+      );
+      this.playbackFisnishCallback(playback);
+    }
+
     if (this.audioContext.state != "running") this.audioContext.resume();
 
     this.playingFrequency = frequency;
@@ -48,6 +58,7 @@ export default class Oscillator {
       this.audioContext.currentTime + gainNodeLinearRampDelay
     );
     this.playBackStartTime = Date.now();
+
     this.isPlaying = true;
   }
 

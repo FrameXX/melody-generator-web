@@ -11,10 +11,17 @@ export default class Melody {
     return this.soundwaves.length;
   }
 
-  public toString() {
+  public multiplySpeed(multiplier: number) {
+    const durationMultiplier = 1 / multiplier;
+    for (const soundwave of this.soundwaves) {
+      soundwave.durationMs *= durationMultiplier;
+    }
+  }
+
+  public toString(roundToWholeNumbers = true) {
     let string = "";
     for (const soundwave of this.soundwaves) {
-      string += ` ${soundwave.toString()}`;
+      string += ` ${soundwave.toString(roundToWholeNumbers)}`;
     }
     return string.substring(1, string.length - 1);
   }

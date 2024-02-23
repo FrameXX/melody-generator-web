@@ -69,7 +69,7 @@ function endTone() {
   setActivePad(null);
 }
 
-function transitionTone(newTone: Tone, pad: HTMLElement) {
+function transitionToTone(newTone: Tone, pad: HTMLElement) {
   props.oscillator.play(newTone.frequency);
   playingToneName = newTone.name;
   setActivePad(pad);
@@ -90,7 +90,7 @@ function trackTouch(event: TouchEvent) {
   const toneFrequency = pad.dataset.frequency;
   if (!toneFrequency) return;
   const newTone = new Tone(toneName, +toneFrequency);
-  transitionTone(newTone, pad);
+  transitionToTone(newTone, pad);
 }
 
 function onMouseEnter(event: MouseEvent, tone: Tone) {
@@ -98,7 +98,7 @@ function onMouseEnter(event: MouseEvent, tone: Tone) {
   if (tone.name === playingToneName) return;
   if (!(event.target instanceof HTMLElement)) return;
   setActivePad(event.target);
-  transitionTone(tone, event.target);
+  transitionToTone(tone, event.target);
 }
 
 addEventListener("visibilitychange", () => {

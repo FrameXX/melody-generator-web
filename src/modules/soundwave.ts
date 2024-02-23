@@ -1,13 +1,21 @@
 export default class SoundWave {
   constructor(
-    private readonly startFrequency: number,
-    private readonly endFrequency: number,
-    private readonly startVolume: number,
-    private readonly endVolume: number,
-    private readonly durationMs: number
+    public startFrequency: number,
+    public endFrequency: number,
+    public startVolume: number,
+    public endVolume: number,
+    public durationMs: number
   ) {}
 
-  public toString() {
-    return `${this.startFrequency} ${this.endFrequency} ${this.startVolume} ${this.endVolume} ${this.durationMs}`;
+  public toString(roundToWholeNumbers = true) {
+    return `${
+      roundToWholeNumbers
+        ? Math.round(this.startFrequency)
+        : this.startFrequency
+    } ${
+      roundToWholeNumbers ? Math.round(this.endFrequency) : this.endFrequency
+    } ${this.startVolume} ${this.endVolume} ${
+      roundToWholeNumbers ? Math.round(this.durationMs) : this.durationMs
+    }`;
   }
 }

@@ -5,7 +5,7 @@ export default class NtfyTopicMessenger {
     return `https://ntfy.sh/${this.topic}`;
   }
 
-  public async postMessage(message: string) {
+  public async sendMessage(message: string) {
     let response;
     try {
       response = await fetch(this.postAddress, {

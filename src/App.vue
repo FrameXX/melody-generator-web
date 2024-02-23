@@ -36,7 +36,11 @@ const playButtonVisible = computed(() => {
         ></div>
       </button>
       <transition name="scale">
-        <button v-show="playButtonVisible" title="přehrát">
+        <button
+          @click="app.playRecordedMelody()"
+          v-show="playButtonVisible"
+          title="přehrát"
+        >
           <icon icon-id="play" />
         </button>
       </transition>
@@ -82,10 +86,13 @@ main {
   @include square-size(var(--font-size-medium));
   background-color: currentColor;
   border-radius: 50%;
-  transition: border-radius var(--transition-duration-short) linear;
+  transition: border-radius var(--transition-duration-short) linear,
+    scale var(--transition-duration-short) linear;
+  scale: 1.1;
 
   &.recording {
     border-radius: 0;
+    scale: 1;
   }
 }
 
