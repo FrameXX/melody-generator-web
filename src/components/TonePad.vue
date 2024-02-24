@@ -48,7 +48,7 @@ function setActivePad(value: null | HTMLElement) {
 }
 
 function startTone(event: PointerEvent, tone: Tone) {
-  navigator.vibrate(30);
+  navigator.vibrate(25);
   props.oscillator.play(tone.frequency);
   playingToneName = tone.name;
 
@@ -70,6 +70,7 @@ function endTone() {
 }
 
 function transitionToTone(newTone: Tone, pad: HTMLElement) {
+  navigator.vibrate(10);
   props.oscillator.play(newTone.frequency);
   playingToneName = newTone.name;
   setActivePad(pad);

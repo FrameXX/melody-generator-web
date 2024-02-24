@@ -2,8 +2,6 @@ export default class SoundWave {
   constructor(
     public startFrequency: number,
     public endFrequency: number,
-    public startVolume: number,
-    public endVolume: number,
     public durationMs: number
   ) {}
 
@@ -14,8 +12,6 @@ export default class SoundWave {
         : this.startFrequency
     } ${
       roundToWholeNumbers ? Math.round(this.endFrequency) : this.endFrequency
-    } ${this.startVolume} ${this.endVolume} ${
-      roundToWholeNumbers ? Math.round(this.durationMs) : this.durationMs
-    }`;
+    } ${roundToWholeNumbers ? Math.round(this.durationMs) : this.durationMs}`;
   }
 }

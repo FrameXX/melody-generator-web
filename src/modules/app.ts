@@ -18,10 +18,13 @@ export default class App {
     playback: OscillatorFinishedPlayback
   ) => {
     if (!this.recordingOscillator) return;
-    this.osciallatorRecorder.recordRest(
-      Date.now() - playback.durationMs - this.lastOscillatorPlaybackFinishTime
-    );
+
+    const beforePlaybackRestDuration =
+      Date.now() - this.lastOscillatorPlaybackFinishTime - playback.durationMs;
+    if (beforePlaybackRestDuration)
+      this.osciallatorRecorder.recordRest(beforePlaybackRestDuration);
     this.osciallatorRecorder.recordPlayback(playback);
+
     this.lastOscillatorPlaybackFinishTime = Date.now();
   };
 
