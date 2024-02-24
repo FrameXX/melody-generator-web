@@ -1,6 +1,6 @@
 import SoundWave from "./soundwave";
 
-export default class Melody {
+export default class OscillatorRecording {
   constructor(public soundwaves: SoundWave[]) {}
 
   private isToneOnIndex(index: number) {

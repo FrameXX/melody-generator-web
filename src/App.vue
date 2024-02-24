@@ -15,7 +15,7 @@ const recordButtonTitle = computed(() => {
 });
 
 const playButtonVisible = computed(() => {
-  return !app.recordingOscillator.value && app.recordedMelody.value;
+  return !app.recordingOscillator.value && app.latestFinishedRecording.value;
 });
 </script>
 

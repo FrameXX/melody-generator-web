@@ -4,7 +4,7 @@ import OscillatorRecorder from "./oscillator_recorder";
 import Oscillator from "./oscillator";
 import OscillatorFinishedPlayback from "./oscillator_finished_playback";
 import Toaster from "./Toaster/toaster";
-import Melody from "./melody";
+import OscillatorRecording from "./oscillator_recording";
 
 export default class App {
   public readonly toaster = new Toaster();
@@ -31,12 +31,12 @@ export default class App {
   public oscillator = new Oscillator(this.onOscillatorPlaybackFinish);
   public readonly recordingOscillator = ref(false);
   private lastOscillatorPlaybackFinishTime = Date.now();
-  public recordedMelody = ref<null | Melody>(null);
+  public latestFinishedRecording = ref<null | OscillatorRecording>(null);
 
   public async playRecordedMelody() {
-    if (!this.recordedMelody.value) return;
+    if (!this.latestFinishedRecording.value) return;
     this.toaster.bake("Posílání melodie do bzučáku.", "send-outline");
-    const melodyMessage = "0 " + this.recordedMelody.value.toString();
+    const melodyMessage = "0 " + this.latestFinishedRecording.value.toString();
     const sentSuccess = await this.speakerMessenger.sendMessage(melodyMessage);
     sentSuccess
       ? this.toaster.bake("Melodie úspěšně odeslána.", "send-check-outline")
@@ -64,8 +64,7 @@ export default class App {
           Date.now() - this.lastOscillatorPlaybackFinishTime
         );
     this.recordingOscillator.value = false;
-    this.recordedMelody.value = this.osciallatorRecorder.recording;
-    this.recordedMelody.value.multiplySpeed(1.5);
+    this.latestFinishedRecording.value = this.osciallatorRecorder.recording;
     this.toaster.bake("Nahrávání ukončeno.", "stop");
   }
 }
