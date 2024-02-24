@@ -65,6 +65,7 @@ export default class App {
         );
     this.recordingOscillator.value = false;
     this.latestFinishedRecording.value = this.osciallatorRecorder.recording;
+    this.latestFinishedRecording.value.multiplySpeed(1.25);
     this.toaster.bake("Nahrávání ukončeno.", "stop");
   }
 }

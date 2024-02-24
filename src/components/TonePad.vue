@@ -156,6 +156,11 @@ addEventListener("visibilitychange", () => {
     transition: translate var(--transition-duration-short)
       var(--transition-timing-jump);
 
+    .name,
+    .frequency {
+      pointer-events: none;
+    }
+
     &:hover {
       translate: 5px;
     }
