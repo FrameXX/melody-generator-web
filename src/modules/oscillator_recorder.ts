@@ -6,10 +6,7 @@ export default class OscillatorRecorder {
   public recording: OscillatorRecording = new OscillatorRecording([]);
 
   public recordPlayback(playback: OscillatorFinishedPlayback) {
-    const soundwave = new SoundWave(
-      playback.frequency,
-      playback.durationMs + playback.finishGainNodeLinearRampDelay * 1000
-    );
+    const soundwave = new SoundWave(playback.frequency, playback.durationMs);
     this.recording.pushSoundwave(soundwave);
   }
 
