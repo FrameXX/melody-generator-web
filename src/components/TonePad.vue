@@ -56,11 +56,11 @@ function startTone(event: PointerEvent, tone: Tone) {
   setActivePad(event.target);
 }
 
-function endTone() {
+function endTone(gainNodeLinearRampDelayRatio = 0.000625) {
   if (!props.oscillator.isPlaying) return;
 
   const gainNodeLinearRampDelay = Math.min(
-    props.oscillator.playbackDurationMs / 1700,
+    props.oscillator.playbackDurationMs * gainNodeLinearRampDelayRatio,
     1
   );
   props.oscillator.stopPlaying(gainNodeLinearRampDelay);
