@@ -5,7 +5,9 @@ import Toaster from "./components/Toaster.vue";
 import App from "./modules/app";
 import Icon from "./components/Icon.vue";
 import TonePad from "./components/TonePad.vue";
-import { computed } from "vue";
+import Intro from "./components/Intro.vue";
+
+import { computed, ref } from "vue";
 const app = new App();
 
 const recordButtonTitle = computed(() => {
@@ -17,6 +19,8 @@ const recordButtonTitle = computed(() => {
 const playButtonVisible = computed(() => {
   return !app.recordingOscillator.value && app.latestFinishedRecording.value;
 });
+
+const introOpen = ref(true);
 </script>
 
 <template>
@@ -46,6 +50,7 @@ const playButtonVisible = computed(() => {
       </transition>
     </div>
   </main>
+  <intro :open="introOpen" @understand="introOpen = false" />
   <toaster :toaster="app.toaster" />
 </template>
 
@@ -79,7 +84,8 @@ main {
 #tone-pad-wrapper {
   width: 100%;
   height: 100%;
-  @include flex-center;
+  display: flex;
+  align-items: end;
 }
 
 #record-icon {

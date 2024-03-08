@@ -181,7 +181,8 @@ h3 {
   background-color: var(--color-primary-surface);
 
   > .content {
-    padding: var(--spacing-big);
+    overflow-y: auto;
+    padding: var(--spacing-medium);
     left: 0;
     right: 0;
     margin: auto;

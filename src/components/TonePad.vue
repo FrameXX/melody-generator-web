@@ -27,6 +27,11 @@ const props = defineProps({
       new Tone("F5", 698.4565),
       new Tone("F♯5", 739.9888, true),
       new Tone("G5", 783.9909),
+      new Tone("G♯5", 830.6094, true),
+      new Tone("A5", 880.0),
+      new Tone("A♯5", 932.3275, true),
+      new Tone("B5", 987.7666),
+      new Tone("C6", 1046.502),
     ],
   },
   oscillator: { type: Object as PropType<Oscillator>, required: true },
@@ -120,6 +125,7 @@ addEventListener("visibilitychange", () => {
       tabindex="0"
       class="tone"
       v-for="(tone, index) in props.tones"
+      :title="`Tone ${tone.name}`"
       :key="tone.name"
       :class="`tone-${index % 12} ${tone.accented ? 'accented' : ''}`"
       :data-name="tone.name"

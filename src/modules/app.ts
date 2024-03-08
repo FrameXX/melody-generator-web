@@ -7,6 +7,7 @@ import Toaster from "./Toaster/toaster";
 import OscillatorRecording from "./oscillator_recording";
 
 export default class App {
+  private readonly maxSoundwaves = 70;
   public readonly toaster = new Toaster();
   public readonly ntfyTopic = ref("melody-generator");
   private readonly speakerMessenger = new NtfyTopicMessenger(
@@ -17,7 +18,7 @@ export default class App {
   private onOscillatorPlaybackFinish = (
     playback: OscillatorFinishedPlayback
   ) => {
-    if (!this.recordingOscillator) return;
+    if (!this.recordingOscillator.value) return;
 
     const beforePlaybackRestDuration =
       Date.now() - this.lastOscillatorPlaybackFinishTime - playback.durationMs;
@@ -26,6 +27,13 @@ export default class App {
     this.osciallatorRecorder.recordPlayback(playback);
 
     this.lastOscillatorPlaybackFinishTime = Date.now();
+
+    if (
+      this.osciallatorRecorder.recording.soundwaves.length >= this.maxSoundwaves
+    ) {
+      this.toaster.bake("Nahrávání překročilo limit délky.", "alert", "error");
+      this.stopOscillatorRecording();
+    }
   };
 
   public oscillator = new Oscillator(this.onOscillatorPlaybackFinish);
@@ -63,6 +71,7 @@ export default class App {
       : this.osciallatorRecorder.recordRest(
           Date.now() - this.lastOscillatorPlaybackFinishTime
         );
+    console.log(this.osciallatorRecorder.recording.toString());
     this.recordingOscillator.value = false;
     this.latestFinishedRecording.value = this.osciallatorRecorder.recording;
     this.latestFinishedRecording.value.multiplySpeed(1.25);
