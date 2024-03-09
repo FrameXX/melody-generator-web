@@ -133,8 +133,8 @@ addEventListener("visibilitychange", () => {
       @mouseenter="onMouseEnter($event, tone)"
       @pointerdown="startTone($event, tone)"
     >
-      <b class="name">{{ tone.name }}</b>
-      <div class="frequency">{{ tone.frequency }}Hz</div>
+      <span class="name">{{ tone.name }}</span>
+      <span class="frequency">{{ tone.frequency }}Hz</span>
     </div>
   </div>
 </template>
@@ -165,6 +165,10 @@ addEventListener("visibilitychange", () => {
     .name,
     .frequency {
       pointer-events: none;
+    }
+
+    .name {
+      font-weight: bold;
     }
 
     &:hover {

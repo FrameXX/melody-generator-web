@@ -29,13 +29,13 @@ const emit = defineEmits(["understand"]);
       </div>
       <div id="actions-explantion">
         <div class="explanation">
-          <span class="description"> Nahrátí melodie </span>
+          <span class="description"> Začít/Ukončit nahrávání </span>
           <button title="Spustit nahrávání">
             <div id="record-icon" class="icon"></div>
           </button>
         </div>
         <div class="explanation">
-          <span class="description"> Přehrátí nahraté melodie </span>
+          <span class="description"> Přehrát nahratou melodii </span>
           <button title="přehrát">
             <icon icon-id="play" />
           </button>
