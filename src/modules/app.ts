@@ -15,6 +15,15 @@ export default class App {
   );
   private readonly osciallatorRecorder = new OscillatorRecorder();
 
+  private checkRecordingTooLong() {
+    if (
+      this.osciallatorRecorder.recording.soundwaves.length >= this.maxSoundwaves
+    ) {
+      this.toaster.bake("Nahrávání překročilo limit délky.", "alert", "error");
+      this.stopOscillatorRecording();
+    }
+  }
+
   private onOscillatorPlaybackFinish = (
     playback: OscillatorFinishedPlayback
   ) => {
@@ -27,13 +36,7 @@ export default class App {
     this.osciallatorRecorder.recordPlayback(playback);
 
     this.lastOscillatorPlaybackFinishTime = Date.now();
-
-    if (
-      this.osciallatorRecorder.recording.soundwaves.length >= this.maxSoundwaves
-    ) {
-      this.toaster.bake("Nahrávání překročilo limit délky.", "alert", "error");
-      this.stopOscillatorRecording();
-    }
+    this.checkRecordingTooLong();
   };
 
   public oscillator = new Oscillator(this.onOscillatorPlaybackFinish);
@@ -66,13 +69,12 @@ export default class App {
   }
 
   private stopOscillatorRecording() {
+    this.recordingOscillator.value = false;
     this.oscillator.isPlaying
       ? this.oscillator.stopPlaying()
       : this.osciallatorRecorder.recordRest(
           Date.now() - this.lastOscillatorPlaybackFinishTime
         );
-    console.log(this.osciallatorRecorder.recording.toString());
-    this.recordingOscillator.value = false;
     this.latestFinishedRecording.value = this.osciallatorRecorder.recording;
     this.latestFinishedRecording.value.multiplySpeed(1.25);
     this.toaster.bake("Nahrávání ukončeno.", "stop");
